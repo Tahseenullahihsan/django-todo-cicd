@@ -1,18 +1,25 @@
 {% extends 'todos/base.html' %}
+{% load static %}
 
 {% block title %}
-<title>Todo list</title>
+<title>Todo List - DevOps Style</title>
 {% endblock %}
 
 {% block content %}
 <div class="container">
+
+  <!-- DevOps Logo -->
+  <div class="text-center my-4">
+    <img src="https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+    alt="DevOps Logo" width="150" height="150" style="border-radius: 50%; object-fit: cover;">
+  </div>
 
   <!-- title row -->
   <div class="row">
     <div class="offset-md-2 col-lg-9">
       <div class="page-header">
         <h1>
-          Todo List - for batch 5
+          DevOps Engineering - Keeping the Code Flowing 🚀
         </h1>
       </div>
     </div>
@@ -25,7 +32,8 @@
         {% csrf_token %}
         <div class="form-row">
           <div class="col-md-6">
-            <input type="text" class="form-control" name="title" placeholder="Do laundry" required>
+            <!-- Changed placeholder text -->
+            <input type="text" class="form-control" name="title" placeholder="Complete DevOps Tutorial" required>
           </div>
           <div class="col-md-6">
             <button type="submit" name="submit" class="btn btn-outline-primary">
@@ -44,21 +52,24 @@
       <div class="list-group">
         {% for todo in todo_list %}
         <div class="list-group-item {% if todo.isCompleted %} todo-complete {% endif %}">
-          <form style="display: inline;" method="post" action="{% url 'todos:update' todo.id %}">
-            {% csrf_token %}
-            <input type="checkbox" name="isCompleted" onchange="this.form.submit()" {% if todo.isCompleted %} checked
-              {% endif %} class="todo-status-checkbox"
-              title="{% if not todo.isCompleted %} mark as done {% else %} mark undone {% endif %}">
-          </form>
-          {{ todo.title }}
-          <a href="{% url 'todos:delete' todo.id %}" title="Delete">
-            <i class="far fa-trash-alt"></i>
-          </a>
+          <div class="d-flex align-items-center">
+            <!-- User image from Google URL -->
+            <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_92x30dp.png" alt="User Image" class="rounded-circle" width="30" height="30" style="margin-right: 10px;">
+            <!-- Todo title and checkbox -->
+            <form style="display: inline;" method="post" action="{% url 'todos:update' todo.id %}">
+              {% csrf_token %}
+              <input type="checkbox" name="isCompleted" onchange="this.form.submit()" {% if todo.isCompleted %} checked {% endif %} class="todo-status-checkbox"
+                title="{% if not todo.isCompleted %} mark as done {% else %} mark undone {% endif %}">
+            </form>
+            {{ todo.title }}
+            <a href="{% url 'todos:delete' todo.id %}" title="Delete">
+              <i class="far fa-trash-alt"></i>
+            </a>
+          </div>
         </div>
         {% endfor %}
       </div>
     </div>
   </div>
 </div>
-
 {% endblock %}
