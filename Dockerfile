@@ -1,10 +1,11 @@
-FROM python:3
+FROM python:3.9
 
 # Set the working directory
 WORKDIR /data
 
 # Update and install the required packagespdate && apt-get install -y --no-install-recommends python3-distutils python3-apt
-RUN apt-get update && apt-get install -y --no-install-recommends python3-distutils python3-apt
+RUN apt-get update && apt-get install -y python3-distutils
+
 # Install Django
 RUN pip install --no-cache-dir django==3.2
 
