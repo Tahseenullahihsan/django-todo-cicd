@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    stages {
+        stage("Code") { 
+            steps { 
+                echo "Pull the code from the Git URL"
+                git branch: 'develop', 
+                    credentialsId: 'github-token', 
+                    url: 'https://github.com/Tahseenullahihsan/django-todo-cicd.git'
+            }
+        }
+        stage("Build") { 
+            steps { 
+                echo "Build the code"
+                sh "docker build -t todo_app ."
+            }
+        }
+        stage("Run") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo "Login to Docker Hub"
+                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USER --password-stdin"
+                    
+                    echo "Stopping and removing any existing containers"
+                    sh "docker-compose down"
+                    
+                    echo "Starting the container using Docker Compose"
+                    sh "docker-compose up -d"
+                }
+            }
+        }
+
+        stage("Deploy") { 
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    echo "Login to Docker Hub"
+                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USER --password-stdin"
+
+                    echo "Pull the latest Docker image"
+                    sh "docker pull tahseen176/todo_app"
+                    
+                    echo "Copy docker-compose.yml to EC2 instance"
+                    sh """
+                        scp -i /path/to/your/private-key.pem docker-compose.yml ec2-user@<EC2-IP>:/home/ec2-user/
+                    """
+                    
+                    echo "Deploying application on EC2"
+                    sh """
+                        ssh -i /path/to/your/private-key.pem ec2-user@<EC2-IP> 'docker-compose pull && docker-compose up -d'
+                    """
+                }
+            }
+        }
+    }
+}
+
